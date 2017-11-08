@@ -57,7 +57,6 @@ class CryptoPayments():
             response      = urllib2.urlopen(req)
             status_code   = response.getcode()
             response_body = response.read()
-            print response_body
         except urllib2.HTTPError as e:
             status_code   = e.getcode()
             response_body = e.read()
