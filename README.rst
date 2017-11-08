@@ -30,6 +30,8 @@ To show you a basic using of the program I'm going to be calling the create_tran
 
 .. code:: python
 
+    from CryptoPayments import CryptoPayments
+
     API_KEY     = 'You Public API Key'
     API_SECRET  = 'You API Secret'
     IPN_URL = 'Your Callback URL'
