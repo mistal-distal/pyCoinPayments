@@ -1,13 +1,14 @@
-import urllib
-import urllib2
+import urllib.request, urllib.parse, urllib.error
+import urllib.request, urllib.error, urllib.parse
 import hmac
 import hashlib
 import json
 from collections import namedtuple
 
 
+
 def _json_hook(d): 
-    return namedtuple('X', d.keys())(*d.values())
+    return namedtuple('X', list(d.keys()))(*list(d.values()))
 
 def pObject(data): 
     return json.loads(data, object_hook=_json_hook).result
@@ -33,7 +34,7 @@ class CryptoPayments():
             the hmac on both sides depends upon the order of the parameters, any
             change in the order and the hmacs wouldn't match
         """
-        encoded = urllib.urlencode(params)
+        encoded = urllib.parse.urlencode(params).encode('utf-8')
         return encoded, hmac.new(self.privateKey, encoded, hashlib.sha512).hexdigest()
 
     def Request(self, request_method, **params):
@@ -41,23 +42,23 @@ class CryptoPayments():
 
             the parameters are joined in the actual api methods so the parameter
             strings can be passed and merged inside those methods instead of the 
-            request method
+            request method. The final encoded URL and HMAC are generated here
         """
         encoded, sig = self.createHmac(**params)
 
         headers = {'hmac': sig}
 
         if request_method == 'get':
-            req = urllib2.Request(url, headers=headers)
+            req = urllib.request.Request(url, headers=headers)
         elif request_method == 'post':
             headers['Content-Type'] = 'application/x-www-form-urlencoded'
-            req = urllib2.Request(self.url, data=encoded, headers=headers)
+            req = urllib.request.Request(self.url, data=encoded, headers=headers)
 
         try:
-            response      = urllib2.urlopen(req)
+            response      = urllib.request.urlopen(req)
             status_code   = response.getcode()
             response_body = response.read()
-        except urllib2.HTTPError as e:
+        except urllib.error.HTTPError as e:
             status_code   = e.getcode()
             response_body = e.read()
 
