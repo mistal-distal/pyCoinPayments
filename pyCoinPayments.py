@@ -35,7 +35,7 @@ class CryptoPayments():
             change in the order and the hmacs wouldn't match
         """
         encoded = urllib.parse.urlencode(params).encode('utf-8')
-        return encoded, hmac.new(self.privateKey, encoded, hashlib.sha512).hexdigest()
+        return encoded, hmac.new(bytearray(self.privateKey, 'utf-8'), encoded, hashlib.sha512).hexdigest()
 
     def Request(self, request_method, **params):
         """The basic request that all API calls use
