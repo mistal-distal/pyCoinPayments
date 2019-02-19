@@ -20,12 +20,13 @@ class CryptoPayments():
     url = 'https://www.coinpayments.net/api.php'
     
 
-    def __init__(self, publicKey, privateKey, ipn_url):
+    def __init__(self, publicKey, privateKey, ipn_url, txid=False):
         self.publicKey = publicKey
         self.privateKey = privateKey
         self.ipn_url = ipn_url
         self.format = 'json'
         self.version = 1
+        self.txid = txid
 
     def createHmac(self, **params):
         """ Generate an HMAC based upon the url arguments/parameters
@@ -90,6 +91,25 @@ class CryptoPayments():
         return self.Request('post', **params)
 
 
+    
+    
+    def getTransactionInfo(self, params={}):
+    """Get transaction info
+                   https://www.coinpayments.net/apidoc-get-tx-info
+     """
+        if not self.txid:
+            return("set txid when calling this function")
+        params.update({'cmd':'get_tx_info',
+                       'key':self.publicKey,
+                       'txid': self.txid,
+                       'version': self.version,
+                       'format': self.format})
+        return self.Request('post', **params)
+    
+    
+    
+    
+    
 
     def rates(self, params={}):
         """Gets current rates for currencies
