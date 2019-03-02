@@ -97,7 +97,7 @@ class CryptoPayments():
                    https://www.coinpayments.net/apidoc-get-tx-info
      """
         if not txid:
-            return("Call ne with a txid!")
+            return False
         params={}
         params.update({'cmd':'get_tx_info',
                        'key':self.publicKey,
