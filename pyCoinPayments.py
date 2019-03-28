@@ -90,6 +90,26 @@ class CryptoPayments():
         return self.Request('post', **params)
 
 
+    
+    
+    def getTransactionInfo(self, txid):
+    """Get transaction info
+                   https://www.coinpayments.net/apidoc-get-tx-info
+     """
+        if not txid:
+            return False
+        params={}
+        params.update({'cmd':'get_tx_info',
+                       'key':self.publicKey,
+                       'txid': txid,
+                       'version': self.version,
+                       'format': self.format})
+        return self.Request('post', **params)
+    
+    
+    
+    
+    
 
     def rates(self, params={}):
         """Gets current rates for currencies
