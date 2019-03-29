@@ -38,8 +38,7 @@ class CryptoPayments():
         return encoded, hmac.new(bytearray(self.privateKey, 'utf-8'), encoded, hashlib.sha512).hexdigest()
 
     def Request(self, request_method, **params):
-        """The basic request that all API calls use
-
+        """ The basic request that all API calls use
             the parameters are joined in the actual api methods so the parameter
             strings can be passed and merged inside those methods instead of the 
             request method. The final encoded URL and HMAC are generated here
@@ -93,9 +92,9 @@ class CryptoPayments():
     
     
     def getTransactionInfo(self, txid):
-    """Get transaction info
-                   https://www.coinpayments.net/apidoc-get-tx-info
-     """
+        """Get transaction info
+                       https://www.coinpayments.net/apidoc-get-tx-info
+        """
         if not txid:
             return False
         params={}
@@ -221,20 +220,3 @@ class CryptoPayments():
                         'version': self.version,
                         'format': self.format})
         return self.Request('post', **params)
-
-
-
-
-    def validate_mac(uuid, price, currency, test_hash):
-        to_check = YOUR_API_KEY + '_' + uuid + '_' + str(int(price*100)) + currency
-        computed_hash = hashlib.sha256(to_check).hexdigest()
-        return (computed_hash == test_hash)
-
-
-
-
-
-
-
-
-
