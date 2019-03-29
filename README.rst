@@ -37,6 +37,7 @@ To show you a basic using of the program I'm going to be calling the create_tran
 
     from CryptoPayments import CryptoPayments
 
+    ## Don't actually store these values like this, rather inject at runtime
     API_KEY     = 'You Public API Key'
     API_SECRET  = 'You API Secret'
     IPN_URL = 'Your Callback URL'
@@ -46,18 +47,18 @@ To show you a basic using of the program I'm going to be calling the create_tran
     post_params = {
         'amount' : 10,
         'currency1' : 'USD',
-        'currency2' : 'LTCT'
+        'currency2' : 'BTC'
     }
 
     client = CryptoPayments(API_KEY, API_SECRET, IPN_URL)
 
     transaction = client.createTransaction(post_params)
 
-    print transaction
+    print (transaction)
     #Prints out transaction details
-    
-    print transaction.amount
-    print transaction.address
+
+    print (transaction.amount)
+    print (transaction.address)
     
 You can reference any of their return fields within the json as a field on the variable. For example the transaction.amount would print out the amount of requested cryptocurrency, same with the address. Their documentation outlines what it returned for fields in each request. The rest of the API client is very similar. Parameters are passed into the API method using a python dictionary, order in this case does not matter because the HMAC and encoded URL are generated at the same time.
     
