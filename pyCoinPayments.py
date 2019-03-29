@@ -6,6 +6,11 @@ import json
 from collections import namedtuple
 
 
+   """
+   These two cryptic functions come from a bunch of answers on this stack overflow post,
+   just a cool way to parse any json result into a python object
+   https://stackoverflow.com/questions/6578986/how-to-convert-json-data-into-a-python-object/28352366
+   """
 
 def _json_hook(d): 
     return namedtuple('X', list(d.keys()))(*list(d.values()))
