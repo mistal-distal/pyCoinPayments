@@ -35,30 +35,42 @@ To show you a basic using of the program I'm going to be calling the create_tran
 
 .. code:: python
 
-    from CryptoPayments import CryptoPayments
-
-    ## Don't actually store these values like this, rather inject at runtime
-    API_KEY     = 'You Public API Key'
-    API_SECRET  = 'You API Secret'
-    IPN_URL = 'Your Callback URL'
-
     ## Parameters for your call, these are defined in the CoinPayments API Docs
     ## https://www.coinpayments.net/apidoc
-    post_params = {
+
+    create_transaction_params = {
         'amount' : 10,
         'currency1' : 'USD',
         'currency2' : 'BTC'
     }
 
+    #Client instance
     client = CryptoPayments(API_KEY, API_SECRET, IPN_URL)
 
-    transaction = client.createTransaction(post_params)
+    #make the call to createTransaction crypto payments API
+    transaction = client.createTransaction(create_transaction_params)
 
-    print (transaction)
-    #Prints out transaction details
 
-    print (transaction.amount)
-    print (transaction.address)
+    if transaction['error'] == 'ok':  #check error status 'ok' means the API returned with desired result
+        print (transaction['amount']) #print some values from the result
+        print (transaction['address'])
+    else:
+        print (transaction['error'])
+
+
+    #Use previous tx Id returned from the previous createTransaction method to test the getTransactionInfo call
+    post_params1 = {
+        'txid' : transaction['txn_id'],    
+    }
+
+
+    transactionInfo = client.getTransactionInfo(post_params1) #call coinpayments API using instance
+
+    if transactionInfo['error'] == 'ok': #check error status 'ok' means the API returned with desired result
+        print (transactionInfo['amountf']) 
+        print (transactionInfo['payment_address'])
+    else:
+        print (transactionInfo['error'])
     
 You can reference any of their return fields within the json as a field on the variable. For example the transaction.amount would print out the amount of requested cryptocurrency, same with the address. Their documentation outlines what it returned for fields in each request. The rest of the API client is very similar. Parameters are passed into the API method using a python dictionary, order in this case does not matter because the HMAC and encoded URL are generated at the same time.
     

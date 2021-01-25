@@ -51,11 +51,7 @@ class CryptoPayments():
 
             response_body_decoded.update(response_body_decoded['result']) #clean up dictionary, flatten "result" key:value pairs to parent dictionary
             response_body_decoded.pop('result', None) #remove the flattened dictionary
-
-            if response_body_decoded['error'] == 'ok': #check to see if the API returned an error
-                pass
-            else:
-                return response_body_decoded
+            
         except urllib.error.HTTPError as e:
             status_code   = e.getcode()
             response_body = e.read()
