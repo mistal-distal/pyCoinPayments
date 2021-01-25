@@ -3,26 +3,9 @@ import urllib.request, urllib.error, urllib.parse
 import hmac
 import hashlib
 import json
-from collections import namedtuple
-
-
-   """
-   These two cryptic functions come from a bunch of answers on this stack overflow post,
-   just a cool way to parse any json result into a python object
-   https://stackoverflow.com/questions/6578986/how-to-convert-json-data-into-a-python-object/28352366
-   """
-
-def _json_hook(d): 
-    return namedtuple('X', list(d.keys()))(*list(d.values()))
-
-def pObject(data): 
-    return json.loads(data, object_hook=_json_hook).result
-
+import collections
 
 class CryptoPayments():
-
-        
-    url = 'https://www.coinpayments.net/api.php'
     
 
     def __init__(self, publicKey, privateKey, ipn_url):
@@ -31,6 +14,7 @@ class CryptoPayments():
         self.ipn_url = ipn_url
         self.format = 'json'
         self.version = 1
+        self.url = 'https://www.coinpayments.net/api.php'
 
     def createHmac(self, **params):
         """ Generate an HMAC based upon the url arguments/parameters
@@ -53,7 +37,7 @@ class CryptoPayments():
         headers = {'hmac': sig}
 
         if request_method == 'get':
-            req = urllib.request.Request(url, headers=headers)
+            req = urllib.request.Request(self.url, headers=headers)
         elif request_method == 'post':
             headers['Content-Type'] = 'application/x-www-form-urlencoded'
             req = urllib.request.Request(self.url, data=encoded, headers=headers)
@@ -62,15 +46,25 @@ class CryptoPayments():
             response      = urllib.request.urlopen(req)
             status_code   = response.getcode()
             response_body = response.read()
+
+            response_body_decoded = json.loads(response_body) #decode Json to dictionary
+
+            response_body_decoded.update(response_body_decoded['result']) #clean up dictionary, flatten "result" key:value pairs to parent dictionary
+            response_body_decoded.pop('result', None) #remove the flattened dictionary
+
+            if response_body_decoded['error'] == 'ok': #check to see if the API returned an error
+                pass
+            else:
+                return response_body_decoded
         except urllib.error.HTTPError as e:
             status_code   = e.getcode()
             response_body = e.read()
 
-        return pObject(response_body)
+        return response_body_decoded
 
 
 
-    def createTransaction(self, params={}):
+    def createTransaction(self, params=None):
         """ Creates a transaction to give to the purchaser
             https://www.coinpayments.net/apidoc-create-transaction
         """
@@ -83,7 +77,7 @@ class CryptoPayments():
 
 
     
-    def getBasicInfo(self, params={}):
+    def getBasicInfo(self, params=None):
         """Gets merchant info based on API key (callee)
            https://www.coinpayments.net/apidoc-get-basic-info
         """
@@ -96,16 +90,13 @@ class CryptoPayments():
 
     
     
-    def getTransactionInfo(self, txid):
+    def getTransactionInfo(self, params=None):
         """Get transaction info
                        https://www.coinpayments.net/apidoc-get-tx-info
         """
-        if not txid:
-            return False
-        params={}
+       
         params.update({'cmd':'get_tx_info',
                        'key':self.publicKey,
-                       'txid': txid,
                        'version': self.version,
                        'format': self.format})
         return self.Request('post', **params)
@@ -115,7 +106,7 @@ class CryptoPayments():
     
     
 
-    def rates(self, params={}):
+    def rates(self, params=None):
         """Gets current rates for currencies
            https://www.coinpayments.net/apidoc-rates 
         """
@@ -127,7 +118,7 @@ class CryptoPayments():
 
 
 
-    def balances(self, params={}):
+    def balances(self, params=None):
         """Get current wallet balances
             https://www.coinpayments.net/apidoc-balances
         """
@@ -138,7 +129,7 @@ class CryptoPayments():
         return self.Request('post', **params)
 
 
-    def getDepositAddress(self, params={}):
+    def getDepositAddress(self, params=None):
         """Get address for personal deposit use
            https://www.coinpayments.net/apidoc-get-deposit-address
         """
@@ -149,7 +140,7 @@ class CryptoPayments():
         return self.Request('post', **params)
 
 
-    def getCallbackAddress(self, params={}):
+    def getCallbackAddress(self, params=None):
         """Get a callback address to recieve info about address status
            https://www.coinpayments.net/apidoc-get-callback-address 
         """
@@ -160,7 +151,7 @@ class CryptoPayments():
                        'format': self.format})
         return self.Request('post', **params)
 
-    def createTransfer(self, params={}):
+    def createTransfer(self, params=None):
         """Not really sure why this function exists to be honest, it transfers
             coins from your addresses to another account on coinpayments using
             merchant ID
@@ -172,7 +163,7 @@ class CryptoPayments():
                        'format': self.format})
         return self.Request('post', **params)
 
-    def createWithdrawal(self, params={}):
+    def createWithdrawal(self, params=None):
         """Withdraw or masswithdraw(NOT RECOMMENDED) coins to a specified address,
         optionally set a IPN when complete.
             https://www.coinpayments.net/apidoc-create-withdrawal
@@ -185,7 +176,7 @@ class CryptoPayments():
 
 
     
-    def convertCoins(self, params={}):
+    def convertCoins(self, params=None):
         """Convert your balances from one currency to another
             https://www.coinpayments.net/apidoc-convert 
         """
@@ -195,7 +186,7 @@ class CryptoPayments():
                         'format': self.format})
         return self.Request('post', **params)
 
-    def getWithdrawalHistory(self, params={}):
+    def getWithdrawalHistory(self, params=None):
         """Get list of recent withdrawals (1-100max)
             https://www.coinpayments.net/apidoc-get-withdrawal-history 
         """
@@ -205,7 +196,7 @@ class CryptoPayments():
                         'format': self.format})
         return self.Request('post', **params)
 
-    def getWithdrawalInfo(self, params={}):
+    def getWithdrawalInfo(self, params=None):
         """Get information about a specific withdrawal based on withdrawal ID
             https://www.coinpayments.net/apidoc-get-withdrawal-info
         """
@@ -216,7 +207,7 @@ class CryptoPayments():
         return self.Request('post', **params)
 
 
-    def getConversionInfo(self, params={}):
+    def getConversionInfo(self, params=None):
         """Get information about a specific withdrawal based on withdrawal ID
             https://www.coinpayments.net/apidoc-get-conversion-info
         """

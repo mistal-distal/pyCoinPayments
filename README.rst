@@ -8,7 +8,7 @@ This library has now been converted to work with python3
 
 
 
-This is an unofficial client for CoinPayments, a website that exposes an API which allows you to accept over *75 cryptocurrencies.* The documentation was a little strange at times so I made this to simplify and help others overcome some of the initial hurdles of trying to use their API. There's some interesting functionality I added to this so you never have to deal directly with the returned json. A c#.net version is coming soon with javascript soon after. 
+This is an unofficial client for CoinPayments, a website that exposes an API which allows you to accept over *75 cryptocurrencies.* 
   
   
 The Absolute Basics
