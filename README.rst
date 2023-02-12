@@ -2,6 +2,15 @@
 pyCoinPayments - Python API client for `CoinPayments <https://www.coinpayments.net>`_
 ***********
 
+## ANNOUNCEMENT - 2/12/2023
+
+It appears coinpayments is restricting many jurisdictions from their services (see link below). For now my development on this project will cease. Sorry about any inconviences. I will not be archiving the project or closing the ability to create new issues, however active development and updates will not happen indefinitely.
+https://www.coinpayments.net/help-restricted
+
+
+
+
+
 Updates
 #####
 This library has now been converted to work with python3
